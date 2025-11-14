@@ -29,7 +29,7 @@ export default function PersonalInformationFormPacient(props: any) {
       setShowModal(true);
       return;
     }
-    router.push("BasicInformationFormPacient");
+    router.push("/(pacient)/BasicInformationFormPacient");
   };
 
   // Função para formatar CPF
@@ -116,9 +116,9 @@ export default function PersonalInformationFormPacient(props: any) {
           <View style={{ paddingHorizontal: 24, paddingVertical: 24, paddingBottom: Platform.OS === 'android' ? 40 : 24 }}>
             <Text className="text-sm mb-4">
               Ao continuar você concorda com nossos{" "}
-              <Link inline variant="black" className="font-semibold" onPress={() => router.push('Terms')}>Termos de Uso</Link>
+              <Link inline variant="black" className="font-semibold" onPress={() => router.push('/Terms')}>Termos de Uso</Link>
               {" "}e{" "}
-              <Link inline variant="black" className="font-semibold" onPress={() => router.push('Polity')}>Política de Privacidade</Link>
+              <Link inline variant="black" className="font-semibold" onPress={() => router.push('/Polity')}>Política de Privacidade</Link>
               .
             </Text>
           </View>
