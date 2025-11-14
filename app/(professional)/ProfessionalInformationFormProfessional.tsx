@@ -6,7 +6,7 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { BackHeader } from '../../components/ui/BackHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
 import { ArrowRight, IdCard } from 'lucide-react-native';
 
 const AREAS = ['Médico', 'Enfermeiro', 'Psicólogo', 'Nutricionista', 'Outro'];
@@ -75,14 +75,13 @@ export default function ProfessionalInformationFormProfessional(props: any) {
   const [registro, setRegistro] = useState('');
   const [estado, setEstado] = useState('Pará');
   const [especialidade, setEspecialidade] = useState('');
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
 
   const isValid = registro.trim().length > 0 && especialidade.trim().length > 0;
 
   const handleNext = () => {
     if (props.onConfirm) props.onConfirm();
-    navigation.navigate('UserInformationFormProfessional' as never);
+    router.push('/(professional)/UserInformationFormProfessional');
   };
 
   return (

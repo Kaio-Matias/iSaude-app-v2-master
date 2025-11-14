@@ -6,14 +6,14 @@ import { Button } from "../../components/ui/Button";
 import { BackHeader } from "../../components/ui/BackHeader";
 import Stepper from "../../components/ui/Stepper";
 import { ErrorBanner } from "../../components/ui/ErrorBanner";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function PasswordInformationFormProfessional(props: any) {
   const [senha, setSenha] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [erro, setErro] = useState("");
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   // Critérios de senha
@@ -70,7 +70,7 @@ export default function PasswordInformationFormProfessional(props: any) {
     }
     setErro("");
     if (props.onConfirm) props.onConfirm(senha);
-    navigation.navigate("ConfirmRegisterProfessional" as never);
+    router.push("/(professional)/ConfirmRegisterProfessional");
   };
 
   return (

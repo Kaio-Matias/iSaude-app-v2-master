@@ -6,7 +6,7 @@ import { BackHeader } from "../../components/ui/BackHeader";
 import { Mail, User, Phone, ChevronRight, ArrowRight } from "lucide-react-native";
 import Stepper from "../../components/ui/Stepper";
 import { Link } from "../../components/ui/Link";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { ConfirmSmsCodeModal } from '../../components/modals/ConfirmSmsCodeModal';
 import { SucessVerificationModal } from '../../components/modals/SucessVerificationModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +19,6 @@ export default function PersonalInformationFormPacient(props: any) {
   const [showModal, setShowModal] = useState(false);
   const [verified, setVerified] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
 
   const isValid = nome.trim() && cpf.trim() && email.trim() && telefone.trim();
@@ -30,7 +29,7 @@ export default function PersonalInformationFormPacient(props: any) {
       setShowModal(true);
       return;
     }
-    navigation.navigate("BasicInformationFormPacient");
+    router.push("BasicInformationFormPacient");
   };
 
   // Função para formatar CPF
@@ -117,9 +116,9 @@ export default function PersonalInformationFormPacient(props: any) {
           <View style={{ paddingHorizontal: 24, paddingVertical: 24, paddingBottom: Platform.OS === 'android' ? 40 : 24 }}>
             <Text className="text-sm mb-4">
               Ao continuar você concorda com nossos{" "}
-              <Link inline variant="black" className="font-semibold" onPress={() => navigation.navigate('Terms')}>Termos de Uso</Link>
+              <Link inline variant="black" className="font-semibold" onPress={() => router.push('Terms')}>Termos de Uso</Link>
               {" "}e{" "}
-              <Link inline variant="black" className="font-semibold" onPress={() => navigation.navigate('Polity')}>Política de Privacidade</Link>
+              <Link inline variant="black" className="font-semibold" onPress={() => router.push('Polity')}>Política de Privacidade</Link>
               .
             </Text>
           </View>
@@ -157,7 +156,7 @@ export default function PersonalInformationFormPacient(props: any) {
       <SucessVerificationModal
         visible={showSuccess}
         onClose={() => setShowSuccess(false)}
-        nextScreen="BasicInformationFormPacient"
+        onContinue={() => router.push("/(pacient)/BasicInformationFormPacient")}
       />
     </View>
   );

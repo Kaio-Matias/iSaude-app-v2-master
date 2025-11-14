@@ -1,13 +1,13 @@
 import React from "react";
-import { View, Text, Image, SafeAreaView, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, SafeAreaView } from "react-native";
 import { Button } from "../../components/ui/Button";
 import Stepper from "../../components/ui/Stepper";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { BackHeader } from "../../components/ui/BackHeader";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ConfirmedRegisterProfessional(props: any) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   
   return (
@@ -38,7 +38,7 @@ export default function ConfirmedRegisterProfessional(props: any) {
       </ScrollView>
       <View style={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 24, backgroundColor: "#fff" }}>
         <Button
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => router.replace('/(tabs)/home')}
           className="w-full rounded-lg"
           style={{ backgroundColor: '#01AEA4' }}
         >

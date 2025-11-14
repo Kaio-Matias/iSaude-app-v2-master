@@ -7,9 +7,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack screenOptions={{ headerShown: false }}>
-        {/* Telas da Raiz */}
         <Stack.Screen name="index" />
-        <Stack.Screen name="home" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="RegisterScreen" />
         <Stack.Screen name="ConnectTypeScreen" />
         <Stack.Screen name="ForgotPasswordScreen" />

@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { View, Text, SafeAreaView, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
-import { useNavigation } from "@react-navigation/native";
-import type { NavigationProp } from "../types/navigation";
+import { router } from "expo-router";
 import { BackHeader } from "../components/ui/BackHeader";
 import { ErrorBanner } from "../components/ui/ErrorBanner";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +11,6 @@ const NovaSenhaScreen = () => {
   const [senha, setSenha] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [erro, setErro] = useState("");
-  const navigation = useNavigation<NavigationProp>();
   const insets = useSafeAreaInsets();
 
   const handleAlterarSenha = () => {
@@ -29,11 +27,11 @@ const NovaSenhaScreen = () => {
       return;
     }
     setErro("");
-    navigation.navigate("SenhaAlterada");
+    router.push("/SenhaAlteradaScreen");
   };
 
   const handleBack = () => {
-    navigation.navigate("Home");
+    router.back();
   };
 
   // Critérios de senha

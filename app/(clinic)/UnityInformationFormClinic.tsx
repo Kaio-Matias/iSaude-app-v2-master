@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { BackHeader } from "../../components/ui/BackHeader";
 import Stepper from "../../components/ui/Stepper";
 import { Input } from "../../components/ui/Input";
@@ -20,7 +20,6 @@ function formatarTelefone(valor: string) {
 }
 
 export default function UnityInformationFormClinic(props: any) {
-  const navigation = useNavigation<any>();
   const [email, setEmail] = useState("");
   const [telefones, setTelefones] = useState([""]);
   const [inputFocused, setInputFocused] = useState<{ email: boolean; telefone: number | null }>({ email: false, telefone: null });
@@ -28,7 +27,7 @@ export default function UnityInformationFormClinic(props: any) {
 
   const handleNext = () => {
     if (props.onConfirm) props.onConfirm({ email, telefones });
-    navigation.navigate("PasswordInformationFormClinic");
+    router.push("/(clinic)/PasswordInformationFormClinic");
   };
 
   const handleTelefoneChange = (value: string, idx: number) => {
@@ -55,7 +54,7 @@ export default function UnityInformationFormClinic(props: any) {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <BackHeader title="Nova Conta" onBackPress={() => navigation.goBack()} />
+      <BackHeader title="Nova Conta" onBackPress={() => router.back()} />
       <Stepper totalSteps={5} currentStep={4} />
       
       {/* Conteúdo principal com scroll */}

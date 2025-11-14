@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router';
-import React from 'react';
 
-export default function PacientLayout() {
-  // Simplesmente exporta um Stack.
-  // screenOptions={{ headerShown: false }} já foi definido no layout principal
-  return <Stack />;
+// Este layout define o grupo de rotas como um Stack Navigator
+// e esconde o cabeçalho (header) por defeito para todos os ecrãs dentro dele.
+export default function Layout() {
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

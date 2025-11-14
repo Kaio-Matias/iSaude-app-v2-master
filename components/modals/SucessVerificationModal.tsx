@@ -2,26 +2,23 @@ import React from "react";
 import { Dimensions, Text } from 'react-native';
 import { ReusableModal } from "../ui/ReusableModal";
 import { Button } from "../ui/Button";
-import { useNavigation } from "@react-navigation/native";
-import type { NavigationProp} from "../../types/navigation";
 
 interface SucessVerificationModalProps {
   visible: boolean;
   onClose: () => void;
-  nextScreen?: keyof RootStackParamList;
+  onContinue: () => void;
 }
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export const SucessVerificationModal: React.FC<SucessVerificationModalProps> = ({
   visible,
   onClose,
-  nextScreen = "",
+  onContinue,
 }) => {
-  const navigation = useNavigation<NavigationProp>();
 
   const handleContinue = () => {
     onClose();
-    navigation.navigate(nextScreen);
+    onContinue();
   };
 
   return (

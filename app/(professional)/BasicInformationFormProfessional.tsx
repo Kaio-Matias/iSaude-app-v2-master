@@ -5,7 +5,7 @@ import Stepper from "../../components/ui/Stepper";
 import { Button } from "../../components/ui/Button";
 import Select from "../../components/ui/Select";
 import DateInput from "../../components/ui/DateInput";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { ArrowRight } from "lucide-react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,7 +14,6 @@ const options = ["Masculino", "Feminino", "Outro", "Prefiro não dizer"];
 export default function BasicInformationFormProfessional(props: any) {
   const [selectedOption, setSelectedOption] = useState("Masculino");
   const [birthDate, setBirthDate] = useState("");
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
 
   const isValid = selectedOption && birthDate.trim();
@@ -22,7 +21,7 @@ export default function BasicInformationFormProfessional(props: any) {
   const handleNext = () => {
     if (!isValid) return;
     if (props.onConfirm) props.onConfirm();
-    navigation.navigate("ProfessionalInformationFormProfessional");
+    router.push("/(professional)/ProfessionalInformationFormProfessional");
   };
 
   return (

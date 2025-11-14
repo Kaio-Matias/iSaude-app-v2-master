@@ -1,18 +1,14 @@
 import React from "react";
 import { View, Text, Image, ScrollView, Platform } from "react-native";
 import { ArrowLeft, ArrowRight } from "lucide-react-native";
-import { NavigationProp } from "../types/navigation";
 import { BackHeader } from "../components/ui/BackHeader";
 import { Button } from "../components/ui/Button";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from "expo-router";
 
-interface RegisterScreenProps {
-    navigation: NavigationProp;
-}
-
-export default function RegisterScreen({ navigation }: RegisterScreenProps) {
+export default function RegisterScreen() {
     const handleBack = () => {
-        navigation.navigate("Home");
+        router.back();
       };
     const insets = useSafeAreaInsets();
     
@@ -54,7 +50,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                     {/* Botões */}
                     <Button
                         className="flex-row items-center justify-between rounded-xl px-6 py-4 mb-4"
-                        onPress={() => navigation.navigate('PersonalInformationFormPacient')}
+                        onPress={() => router.push('/(pacient)/PersonalInformationFormPacient')}
                         variant="primary"
                         icon={<ArrowRight size={22} color="#fff" />}
                         style={{ marginBottom: 12, justifyContent: 'space-between' }}
@@ -64,7 +60,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
                     <Button
                         className="flex-row items-center justify-between rounded-xl px-6 py-4"
-                        onPress={() => navigation.navigate('ConnectType')}
+                        onPress={() => router.push('/ConnectTypeScreen')}
                         variant="secondary"
                         icon={<ArrowRight size={22} color="#fff" />}
                         style={{ marginBottom: Platform.OS === 'android' ? insets.bottom + 24 : 24, justifyContent: 'space-between' }}
@@ -75,4 +71,4 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
             </ScrollView>
         </View>
     );
-} 
+}

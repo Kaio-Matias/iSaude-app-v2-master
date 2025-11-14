@@ -2,13 +2,12 @@ import React from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { Button } from "../../components/ui/Button";
 import Stepper from "../../components/ui/Stepper";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { BackHeader } from "../../components/ui/BackHeader";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowRight } from "lucide-react-native";
 
 export default function ConfirmedRegisterPacient(props: any) {
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   return (
     <View style={{ flex: 1, backgroundColor: "#fff", paddingTop: insets.top }}>
@@ -44,7 +43,7 @@ export default function ConfirmedRegisterPacient(props: any) {
         borderTopColor: '#f3f4f6'
       }}>
         <Button
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => router.replace('/(tabs)/home')}
           icon={<ArrowRight size={18} color="white" />}
           className="w-full rounded-lg"
           style={{ backgroundColor: '#01AEA4' }}

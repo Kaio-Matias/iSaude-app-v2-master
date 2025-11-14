@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { BackHeader } from "../../components/ui/BackHeader";
 import Stepper from "../../components/ui/Stepper";
 import { Input } from "../../components/ui/Input";
@@ -18,7 +18,6 @@ const SUGESTOES = [
 ];
 
 export default function UserInformationFormProfessional(props: any) {
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [username, setUsername] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
@@ -28,12 +27,12 @@ export default function UserInformationFormProfessional(props: any) {
   const handleNext = () => {
     if (!isValid) return;
     if (props.onConfirm) props.onConfirm(username);
-    navigation.navigate("PasswordInformationFormProfessional" as never);
+    router.push("/(professional)/PasswordInformationFormProfessional");
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff", paddingTop: insets.top }}>
-      <BackHeader title="Escolha seu nome de usuário!" onBackPress={() => navigation.goBack()} />
+      <BackHeader title="Escolha seu nome de usuário!" onBackPress={() => router.back()} />
       <Stepper totalSteps={5} currentStep={4} />
       
       {/* Conteúdo principal com scroll */}

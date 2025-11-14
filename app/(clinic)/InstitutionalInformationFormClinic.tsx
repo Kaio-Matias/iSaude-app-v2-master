@@ -8,6 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { BackHeader } from '../../components/ui/BackHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowRight } from 'lucide-react-native';
+import { router } from 'expo-router';
 
 const TIPOS_UNIDADE = [
   'Clínica Médica',
@@ -18,7 +19,7 @@ const TIPOS_UNIDADE = [
   'Outro'
 ];
 
-export default function InstitutionalInformationFormClinic({ navigation }: { navigation: any }) {
+export default function InstitutionalInformationFormClinic() {
   const [cnpj, setCnpj] = useState('');
   const [nomeFantasia, setNomeFantasia] = useState('');
   const [tipoUnidade, setTipoUnidade] = useState('Clínica Médica');
@@ -52,7 +53,7 @@ export default function InstitutionalInformationFormClinic({ navigation }: { nav
   const handleNext = () => {
     if (!isValid) return;
     // Validação e navegação
-    navigation.navigate('UnityInformationFormClinic');
+    router.replace('/(clinic)/UnityInformationFormClinic');
   };
 
   return (

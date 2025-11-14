@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { ArrowRight } from "lucide-react-native";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { BackHeader } from "../../components/ui/BackHeader";
 import Stepper from "../../components/ui/Stepper";
 import { Input } from "../../components/ui/Input";
@@ -16,7 +16,6 @@ const SUGESTOES = [
 ];
 
 export default function UserInformationFormPacient(props: any) {
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [username, setUsername] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
@@ -26,7 +25,7 @@ export default function UserInformationFormPacient(props: any) {
   const handleNext = () => {
     if (!isValid) return;
     if (props.onConfirm) props.onConfirm(username);
-    navigation.navigate("PasswordInformationFormPacient");
+    router.push("/(pacient)/PasswordInformationFormPacient");
   };
 
   return (

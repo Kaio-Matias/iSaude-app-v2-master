@@ -1,16 +1,15 @@
 import React from 'react';
 import { View, Text, ScrollView, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
 import { Button } from '../components/ui/Button';
 import { BackHeader } from '../components/ui/BackHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Polity() {
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <BackHeader title="Política de Privacidade" onBackPress={() => navigation.goBack()} />
+      <BackHeader title="Política de Privacidade" onBackPress={() => router.back()} />
       <View className="flex-1">
         <ScrollView className="flex-1 px-6 pt-2" contentContainerStyle={{ paddingBottom: insets.bottom + 24 }} keyboardShouldPersistTaps="handled">
           <Text className="text-gray-700 text-lg mb-4">
@@ -36,7 +35,7 @@ Fique tranquilo(a)! Seus dados são protegidos com os mais altos padrões de seg
           </Text>
         </ScrollView>
         <View className="px-6 pb-6 pt-2 bg-white" style={{ paddingBottom: insets.bottom + 8 }}>
-          <Button onPress={() => navigation.goBack()} className="bg-[#01AEA4] rounded-md py-3 w-full">
+          <Button onPress={() => router.back()} className="bg-[#01AEA4] rounded-md py-3 w-full">
          Entendi!!
           </Button>
         </View>

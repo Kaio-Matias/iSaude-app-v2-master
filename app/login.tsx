@@ -4,11 +4,11 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { ReusableModal } from "../components/ui/ReusableModal";
 import { ChevronRight, ArrowRight, KeyRound, IdCard } from "lucide-react-native";
-import { Link } from "../components/ui/Link";
-import { router } from "expo-router";
+import { Link as UILink } from "../components/ui/Link";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from "expo-router";
 
-export default function HomeScreen() {
+export default function LoginScreen() {
     const [cpfCnpj, setCpfCnpj] = useState("");
     const [senha, setSenha] = useState("");
     const [modalVisible, setModalVisible] = useState(true);
@@ -79,7 +79,7 @@ export default function HomeScreen() {
                         icon={<KeyRound size={18} color="#A0AEC0" />}
                     />
                     <View className="flex-row justify-end p-4 mb-10">
-                        <Link
+                        <UILink
                             onPress={() => {
                                 setModalVisible(false);
                                 router.push('/ForgotPasswordScreen');
@@ -88,14 +88,14 @@ export default function HomeScreen() {
                             icon={<ChevronRight size={16} color="#222" />}
                         >
                             Esqueci minha Senha!
-                        </Link>
+                        </UILink>
                     </View>
-                    <Button onPress={() => { }} icon={<ArrowRight size={20} color="white" />}>
+                    <Button onPress={() => { router.replace('/(tabs)/home')}} icon={<ArrowRight size={20} color="white" />}>
                         Continuar
                     </Button>
                     <View className="flex-row justify-center mt-4">
                         <Text className="text-center text-lg">Novo por aqui? </Text>
-                        <Link onPress={handleNavigateToRegister} className="text-lg">Crie uma conta!</Link>
+                        <UILink onPress={handleNavigateToRegister} className="text-lg">Crie uma conta!</UILink>
                     </View>
                 </ReusableModal>
                 {/* Botão 'Começar' só aparece se nenhum modal estiver aberto */}

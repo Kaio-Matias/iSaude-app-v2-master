@@ -2,12 +2,11 @@ import React from "react";
 import { View, Text, Image, SafeAreaView, ScrollView } from "react-native";
 import { Button } from "../../components/ui/Button";
 import Stepper from "../../components/ui/Stepper";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { BackHeader } from "../../components/ui/BackHeader";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ConfirmedRegisterClinic(props: any) {
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -37,7 +36,7 @@ export default function ConfirmedRegisterClinic(props: any) {
       </ScrollView>
       <View style={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 24, backgroundColor: "#fff" }}>
         <Button
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => router.replace('/(tabs)/home')}
           className="w-full rounded-lg"
           style={{ backgroundColor: '#01AEA4' }}
         >

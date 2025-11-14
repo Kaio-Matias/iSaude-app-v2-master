@@ -2,8 +2,6 @@ import React, { useRef, useState } from "react";
 import { View, Text, TextInput,TouchableOpacity, Dimensions } from 'react-native';
 import { ReusableModal } from "../ui/ReusableModal";
 import { Button } from "../ui/Button";
-import { useNavigation } from "@react-navigation/native";
-import type { NavigationProp } from "../../types/navigation";
 import { AlertCircle } from "lucide-react-native";
 import { ErrorBanner } from "../ui/ErrorBanner";
 
@@ -27,7 +25,6 @@ export const ConfirmSmsCodeModal: React.FC<ConfirmSmsCodeModalProps> = ({
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState(false);
   const inputs = useRef<(TextInput | null)[]>([]);
-  const navigation = useNavigation<NavigationProp>();
 
   const handleChange = (text: string, idx: number) => {
     if (/^[0-9]?$/.test(text)) {
@@ -50,7 +47,7 @@ export const ConfirmSmsCodeModal: React.FC<ConfirmSmsCodeModalProps> = ({
   const handleVerify = () => {
     // Simulação de erro
     setError(false);
-    onVerify(code.join("222222"));
+    onVerify(code.join(""));
   };
 
   const filled = code.every((c) => c.length === 1);

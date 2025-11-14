@@ -1,18 +1,14 @@
 import React from "react";
 import { SafeAreaView, Text, View, TouchableOpacity, Image, ScrollView } from "react-native";
 import { ArrowLeft, ArrowRight } from "lucide-react-native";
-import { NavigationProp } from "../types/navigation";
 import { BackHeader } from "../components/ui/BackHeader";
 import { Button } from "../components/ui/Button";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from "expo-router";
 
-interface ConnectTypeScreenProps {
-    navigation: NavigationProp;
-}
-
-export default function ConnectTypeScreen({ navigation }: ConnectTypeScreenProps) {
+export default function ConnectTypeScreen() {
     const handleBack = () => {
-        navigation.navigate("Register");
+        router.back();
       };
     const insets = useSafeAreaInsets();
     return (
@@ -39,7 +35,7 @@ export default function ConnectTypeScreen({ navigation }: ConnectTypeScreenProps
 
                     {/* Botões */}
                     <Button
-                        onPress={() => navigation.navigate('PersonalInformationFormProfessional')}
+                        onPress={() => router.push('/(professional)/PersonalInformationFormProfessional')}
                         className="flex-row items-center justify-between rounded-xl px-6 py-4 mb-4"
                         style={{ backgroundColor: '#01AEA4', justifyContent: 'space-between', marginBottom: 12 }}
                         icon={<ArrowRight size={22} color="#fff" />}
@@ -48,7 +44,7 @@ export default function ConnectTypeScreen({ navigation }: ConnectTypeScreenProps
                     </Button>
 
                     <Button
-                      onPress={() => navigation.navigate('PersonalInformationFormClinic')}
+                      onPress={() => router.push('/(clinic)/PersonalInformationFormClinic')}
                         className="flex-row items-center justify-between rounded-xl px-6 py-4"
                         style={{ backgroundColor: '#7F5CE1', justifyContent: 'space-between', marginBottom: insets.bottom + 12 }}
                         icon={<ArrowRight size={22} color="#fff" />}

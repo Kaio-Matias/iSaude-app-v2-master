@@ -5,12 +5,12 @@ import { Button } from "../components/ui/Button";
 import { Phone, ArrowRight } from "lucide-react-native";
 import { Link } from "../components/ui/Link";
 import { BackHeader } from "../components/ui/BackHeader";
-import type { NavigationProp } from '../types/navigation';
+import { router } from "expo-router";
 import { ConfirmSmsCodeModal } from "../components/modals/ConfirmSmsCodeModal";
 import { ErrorBanner } from "../components/ui/ErrorBanner";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function ForgotPasswordScreen({ navigation }: { navigation: NavigationProp }) {
+export default function ForgotPasswordScreen() {
   const [phone, setPhone] = useState("");
   const [smsModalVisible, setSmsModalVisible] = useState(false);
   const [erro, setErro] = useState("");
@@ -33,7 +33,7 @@ export default function ForgotPasswordScreen({ navigation }: { navigation: Navig
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff", paddingTop: insets.top }}>
-      <BackHeader title="Recuperação de Senha" onBackPress={() => navigation.goBack()} />
+      <BackHeader title="Recuperação de Senha" onBackPress={() => router.back()} />
       <ErrorBanner visible={!!erro} title={erro} onClose={() => setErro("")} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -62,7 +62,7 @@ export default function ForgotPasswordScreen({ navigation }: { navigation: Navig
               Continuar
             </Button>
             <View style={{ alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-              <Link className="mt-4 text-center text-blue-600" onPress={() => navigation.navigate('Home' as never)}>
+              <Link className="mt-4 text-center text-blue-600" onPress={() => router.push('/login')}>
                 Não tenho acesso ao Email ou Telefone
               </Link>
             </View>
@@ -74,7 +74,7 @@ export default function ForgotPasswordScreen({ navigation }: { navigation: Navig
         onClose={() => setSmsModalVisible(false)}
         onVerify={(code: string) => {
           setSmsModalVisible(false);
-          navigation.navigate('NovaSenha' as never);
+          router.push('/NovaSenhaScreen');
         }}
         onResend={() => {}}
         phoneEnding={phone.slice(-4)}

@@ -1,11 +1,10 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
 import { Button } from "../components/ui/Button";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SenhaAlteradaScreen = () => {
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   return (
     <View className="flex-1 bg-white px-6 pb-10">
@@ -22,7 +21,7 @@ const SenhaAlteradaScreen = () => {
         </Text>
       </View>
       <Button
-        onPress={() => navigation.navigate('Home' as never)}
+        onPress={() => router.replace('/login')}
         className="bg-blue-500 w-full mt-8"
         style={{ marginBottom: insets.bottom + 16 }}
       >
