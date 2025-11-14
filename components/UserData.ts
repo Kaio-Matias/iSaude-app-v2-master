@@ -1,0 +1,80 @@
+export const MOCK_USERS = [
+  {
+    id: '1',
+    name: 'João Silva',
+    username: '@joaosilva',
+    // usar DiceBear (padrão do projeto) para consistência
+    avatar: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=JoaoSilva&backgroundColor=4576F2&size=200' },
+    bio: 'Nutricionista apaixonado por saúde.',
+    followers: 1200,
+    mutuals: 24,
+    mutualsAvatars: [
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo1&backgroundColor=2ECC71&size=100' },
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo2&backgroundColor=FF6B6B&size=100' },
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo3&backgroundColor=9B59B6&size=100' },
+    ],
+  },
+  {
+    id: '2',
+    name: 'Maria Oliveira',
+    username: '@mariaoliveira',
+    avatar: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=MariaOliveira&backgroundColor=DC2626&size=200' },
+    bio: 'Psicóloga especializada em bem-estar mental.',
+    followers: 850,
+    mutuals: 8,
+    mutualsAvatars: [
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo2&backgroundColor=FF6B6B&size=100' },
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo4&backgroundColor=20B2AA&size=100' },
+    ],
+  },
+  {
+    id: '3',
+    name: 'Carlos Santos',
+    username: '@carlossantos',
+    avatar: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=CarlosSantos&backgroundColor=20B2AA&size=200' },
+    bio: 'Médico cardiologista com foco em prevenção.',
+    followers: 2100,
+    mutuals: 3,
+    mutualsAvatars: [
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo5&backgroundColor=4576F2&size=100' },
+    ],
+  },
+  {
+    id: '4',
+    name: 'Ana Costa',
+    username: '@anacosta',
+    avatar: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=AnaCosta&backgroundColor=9B59B6&size=200' },
+    bio: 'Enfermeira dedicada à saúde comunitária.',
+    followers: 650,
+    mutuals: 12,
+    mutualsAvatars: [
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo1&backgroundColor=2ECC71&size=100' },
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo3&backgroundColor=9B59B6&size=100' },
+    ],
+  },
+  {
+    id: '5',
+    name: 'Pedro Lima',
+    username: '@pedrolima',
+    avatar: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=PedroLima&backgroundColor=4576F2&size=200' },
+    bio: 'Fisioterapeuta esportivo.',
+    followers: 980,
+    mutuals: 5,
+    mutualsAvatars: [
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo4&backgroundColor=20B2AA&size=100' },
+    ],
+  },
+  {
+    id: '6',
+    name: 'Luana Ferreira',
+    username: '@luanaferreira',
+    avatar: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=LuanaFerreira&backgroundColor=4576F2&size=200' },
+    bio: 'Especialista em nutrição infantil.',
+    followers: 1450,
+    mutuals: 9,
+    mutualsAvatars: [
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo2&backgroundColor=FF6B6B&size=100' },
+      { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Amigo5&backgroundColor=4576F2&size=100' },
+    ],
+  },
+];
