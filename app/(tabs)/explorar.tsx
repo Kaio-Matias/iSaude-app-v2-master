@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -10,9 +10,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MOCK_USERS } from '../../components/UserData';
+import api from '../../lib/api';
 
 const { width } = Dimensions.get('window');
 
@@ -32,8 +33,25 @@ const SUGGESTED_IMAGES = Array.from({ length: 12 }).map((_, i) => ({
 export default function ExplorarScreen() {
   const [query, setQuery] = useState('');
   const navigation = useNavigation();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredUsers = MOCK_USERS.filter(user =>
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await api.get('/users');
+        setUsers(response.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(query.toLowerCase()) ||
     user.username.toLowerCase().includes(query.toLowerCase())
   );
@@ -62,7 +80,7 @@ export default function ExplorarScreen() {
     </TouchableOpacity>
   );
 
-  const renderUser = ({ item }: { item: typeof MOCK_USERS[0] }) => (
+  const renderUser = ({ item }: { item: any }) => (
     <View style={styles.userItem}>
       <Image source={typeof item.avatar === 'string' ? { uri: item.avatar } : item.avatar} style={styles.userAvatar} />
       <View style={styles.userItemText}>
@@ -79,6 +97,22 @@ export default function ExplorarScreen() {
       </TouchableOpacity>
     </View>
   );
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <Text>Error fetching users</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -141,7 +175,7 @@ export default function ExplorarScreen() {
               <View style={[styles.section, { paddingHorizontal: 0 }]}> 
                     <Text style={styles.sectionTitle}>Sugestões de usuários para seguir</Text>
                     <FlatList
-                      data={MOCK_USERS.slice(0, 6)}
+                      data={users.slice(0, 6)}
                       horizontal
                       keyExtractor={(i) => i.id}
                       showsHorizontalScrollIndicator={false}

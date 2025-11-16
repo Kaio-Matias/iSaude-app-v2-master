@@ -2,7 +2,7 @@ import { useTabBadges } from '@/hooks/useTabBadges';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Conversation, messageService } from '../../components/chat/MessageService';
 
 function ChatItem({ chat, onPress }: { chat: Conversation; onPress: () => void }) {
@@ -40,17 +40,25 @@ const tabs = [
 export default function ConversasScreen() {
   const [selectedTab, setSelectedTab] = useState<'principal'|'arquivadas'|'solicitacoes'>('principal');
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
   const { updateBadge } = useTabBadges();
 
   useEffect(() => {
-    // Carregar conversas do serviço
-    const loadedConversations = messageService.getConversations();
-    setConversations(loadedConversations);
-
-    // Atualizar badge da tab conversas com total de chats não lidos
-    const totalUnreadChats = loadedConversations.filter(conv => conv.unreadCount > 0).length;
-    updateBadge('conversas', totalUnreadChats);
+    const fetchConversations = async () => {
+      try {
+        const loadedConversations = await messageService.getConversations();
+        setConversations(loadedConversations);
+        const totalUnreadChats = loadedConversations.filter(conv => conv.unreadCount > 0).length;
+        updateBadge('conversas', totalUnreadChats);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConversations();
   }, [updateBadge]);
 
   const filteredChats = conversations.filter(chat => (chat.tab ?? 'principal') === selectedTab);
@@ -58,6 +66,22 @@ export default function ConversasScreen() {
   const handleChatPress = (chatId: string) => {
     router.push(('/chat/' + chatId) as any);
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>Error fetching conversations</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

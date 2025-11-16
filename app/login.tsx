@@ -1,20 +1,26 @@
 import React, { useState } from "react";
-import { Image, SafeAreaView, Text, TouchableOpacity, View, Linking, ImageBackground } from "react-native";
+import { Image, SafeAreaView, Text, TouchableOpacity, View, Linking, ImageBackground, Alert } from "react-native";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { ReusableModal } from "../components/ui/ReusableModal";
-import { ChevronRight, ArrowRight, KeyRound, IdCard } from "lucide-react-native";
+import { ChevronRight, ArrowRight, KeyRound, Mail } from "lucide-react-native";
 import { Link as UILink } from "../components/ui/Link";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from "expo-router";
+import { signIn } from "../lib/auth";
+import { useAuth } from "../hooks/useAuth";
+
+import { useAuth } from "../hooks/useAuth";
 
 export default function LoginScreen() {
-    const [cpfCnpj, setCpfCnpj] = useState("");
+    const { login } = useAuth();
+    const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [modalVisible, setModalVisible] = useState(true);
     const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
     const [smsModal, setSmsModal] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const insets = useSafeAreaInsets();
 
@@ -47,6 +53,21 @@ export default function LoginScreen() {
         router.push('/RegisterScreen');
     };
 
+    const handleLogin = async () => {
+        setLoading(true);
+        try {
+            const { token } = await signIn({ email, password: senha });
+            login(token);
+            console.log("Login successful, token:", token);
+            router.replace('/(tabs)/home');
+        } catch (error) {
+            Alert.alert("Erro no Login", error instanceof Error ? error.message : "Ocorreu um erro desconhecido.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     return (
         <ImageBackground source={require("../assets/images/home-image.png")} className={`flex-1${algumModalAberto ? ' pb-80' : ''}`}>
             <SafeAreaView className="flex-1 bg-transparent">
@@ -64,11 +85,12 @@ export default function LoginScreen() {
                         Utilize suas Informações de Login para entrar na comunidade iSaúde!
                     </Text>
                     <Input
-                        label="CPF ou CNPJ"
-                        placeholder="Digite seu CPF ou CNPJ aqui"
-                        value={cpfCnpj}
-                        onChangeText={setCpfCnpj}
-                        icon={<IdCard size={18} color="#A0AEC0" />}
+                        label="Email"
+                        placeholder="Digite seu email aqui"
+                        value={email}
+                        onChangeText={setEmail}
+                        icon={<Mail size={18} color="#A0AEC0" />}
+                        keyboardType="email-address"
                     />
                     <Input
                         label="Senha"
@@ -90,8 +112,8 @@ export default function LoginScreen() {
                             Esqueci minha Senha!
                         </UILink>
                     </View>
-                    <Button onPress={() => { router.replace('/(tabs)/home')}} icon={<ArrowRight size={20} color="white" />}>
-                        Continuar
+                    <Button onPress={handleLogin} icon={<ArrowRight size={20} color="white" />} disabled={loading}>
+                        {loading ? "Entrando..." : "Continuar"}
                     </Button>
                     <View className="flex-row justify-center mt-4">
                         <Text className="text-center text-lg">Novo por aqui? </Text>

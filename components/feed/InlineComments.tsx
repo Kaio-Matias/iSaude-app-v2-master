@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Comment, storageService } from './StorageService';
+import { getComments, addComment, deleteComment, Comment } from '../../lib/feed';
 
 interface InlineCommentsProps {
   postId: string;
@@ -24,16 +24,16 @@ export default function InlineComments({ postId, onCommentCountChange, maxVisibl
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Avatar do usuário logado (simulado)
+  // TODO: Substituir por dados do usuário logado a partir de um contexto de autenticação
   const currentUser = {
-    name: 'Você',
-    avatar: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=SeuFlash&backgroundColor=4576F2&size=100' }
+    name: 'Usuário Logado',
+    avatar: { uri: `https://api.dicebear.com/7.x/avataaars/png?seed=CurrentUser&backgroundColor=4576F2&size=100` }
   };
 
   useEffect(() => {
     const loadComments = async () => {
       try {
-        const loadedComments = await storageService.getComments(postId);
+        const loadedComments = await getComments(postId);
         setComments(loadedComments);
       } catch {
         console.error('Erro ao carregar comentários');
@@ -48,17 +48,8 @@ export default function InlineComments({ postId, onCommentCountChange, maxVisibl
 
     setLoading(true);
     try {
-      await storageService.addComment(
-        postId,
-        newComment.trim(),
-        currentUser.name,
-        currentUser.avatar
-      );
-      
-      // Recarrega os comentários do storage em vez de adicionar manualmente
-      const loadedComments = await storageService.getComments(postId);
-      setComments(loadedComments);
-      
+      const addedComment = await addComment(postId, newComment.trim());
+      setComments(prevComments => [addedComment, ...prevComments]);
       setNewComment('');
       onCommentCountChange(); // Atualiza o contador no post
     } catch {
@@ -78,12 +69,12 @@ export default function InlineComments({ postId, onCommentCountChange, maxVisibl
           text: 'Excluir',
           style: 'destructive',
           onPress: async () => {
-            const success = await storageService.deleteComment(commentId, postId);
-            if (success) {
-              // Recarrega os comentários do storage em vez de filtrar manualmente
-              const loadedComments = await storageService.getComments(postId);
-              setComments(loadedComments);
+            try {
+              await deleteComment(postId, commentId);
+              setComments(prevComments => prevComments.filter(c => c.id !== commentId));
               onCommentCountChange(); // Atualiza o contador
+            } catch {
+              Alert.alert('Erro', 'Não foi possível excluir o comentário');
             }
           }
         }

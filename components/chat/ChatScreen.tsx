@@ -1,19 +1,39 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Bubble, GiftedChat, IMessage, InputToolbar, MessageText } from 'react-native-gifted-chat';
-import { chatConversations } from './ChatMockData';
 import { formatChatMessages } from './formatChatMessages';
 import { messageService } from './MessageService';
 
 export default function ChatScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const conversation = chatConversations.find(c => c.id === id);
-  const [messages, setMessages] = useState<IMessage[]>(
-    conversation ? formatChatMessages([...conversation.messages].reverse()) : []
-  );
+  const [conversation, setConversation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [messages, setMessages] = useState<IMessage[]>([]);
+
+  useEffect(() => {
+    if (id && typeof id === 'string') {
+      const fetchConversation = async () => {
+        try {
+          const fetchedConversation = await messageService.getConversationById(id);
+          if (fetchedConversation) {
+            setConversation(fetchedConversation as any);
+            setMessages(formatChatMessages([...fetchedConversation.messages].reverse()));
+          } else {
+            throw new Error('Conversa não encontrada');
+          }
+        } catch (err) {
+          setError(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchConversation();
+    }
+  }, [id]);
 
   useEffect(() => {
     // Marcar mensagens da conversa como lidas quando a tela for aberta
@@ -22,11 +42,29 @@ export default function ChatScreen() {
     }
   }, [id]);
 
-  const onSend = useCallback((newMessages: IMessage[] = []) => {
-    setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
-  }, []);
+  const onSend = useCallback(async (newMessages: IMessage[] = []) => {
+    const messageText = newMessages[0].text;
+    if (id && typeof id === 'string') {
+      // Otimistamente atualiza a UI
+      setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+      try {
+        await messageService.addMessageToConversation(id, messageText);
+      } catch (error) {
+        console.error("Erro ao enviar mensagem:", error);
+        // TODO: Adicionar lógica para reverter a UI ou mostrar um erro
+      }
+    }
+  }, [id]);
 
-  if (!conversation) {
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.centered}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !conversation) {
     return (
       <SafeAreaView style={styles.centered}>
         <Text>Conversa não encontrada.</Text>

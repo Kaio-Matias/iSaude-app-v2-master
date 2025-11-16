@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Notification, notificationService } from './NotificationService';
 
 const NotificationItem = ({ item }: { item: Notification }) => {
   if (item.type === 'consulta') {
     return (
       <View style={styles.itemContainer}>
-        <Image source={require('@/assets/images/informacoes.png')} style={styles.icon} />
+        <Image source={{uri: 'placeholder.png'}} style={styles.icon} />
         <View style={styles.textContainer}>
           <Text style={styles.titleBold}>{item.title}</Text>
           <Text style={styles.description}><Text style={styles.bold}>A consulta com a Dra. Maria Glenda</Text> irá iniciar hoje às...</Text>
@@ -22,7 +22,7 @@ const NotificationItem = ({ item }: { item: Notification }) => {
         <Text style={styles.time}>{item.time}</Text>
       </View>
       {item.post && (
-        <Image source={item.post.image} style={styles.postImage} />
+        <Image source={{uri: item.post.image}} style={styles.postImage} />
       )}
       {item.canFollowBack && (
         <TouchableOpacity style={styles.actionButton}><Text style={styles.actionText}>Seguir</Text></TouchableOpacity>
@@ -37,10 +37,21 @@ const NotificationItem = ({ item }: { item: Notification }) => {
 export const NotificationsList = () => {
   const [selectedType, setSelectedType] = useState<'todas'|'curtiu'|'seguiu'|'comentario'|'mencionado'|'consulta'>('todas');
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Carregar notificações do serviço
-    setNotifications(notificationService.getNotifications());
+    const fetchNotifications = async () => {
+      try {
+        const loadedNotifications = await notificationService.getAllNotifications();
+        setNotifications(loadedNotifications);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotifications();
   }, []);
 
   const filterOptions = [
@@ -59,6 +70,22 @@ export const NotificationsList = () => {
   // Separar notificações por período - não lidas são "hoje", lidas são "semana passada"
   const notificationsToday = filteredNotifications.filter(n => !n.isRead);
   const notificationsWeek = filteredNotifications.filter(n => n.isRead);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text>Error fetching notifications</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

@@ -1,3 +1,5 @@
+import api from '../../lib/api';
+
 // Serviço de gerenciamento de notificações
 // Mantém o estado das notificações não vistas durante a sessão
 
@@ -23,158 +25,19 @@ class NotificationService {
   private unreadCount: number = 0;
 
   constructor() {
-    this.initializeMockNotifications();
+    this.getNotifications();
   }
 
-  private initializeMockNotifications() {
-    const avatars = {
-      jorge: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=JorgeZikenay&backgroundColor=FF6B6B&size=100' },
-      ana: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=AnaPaulaNutri&backgroundColor=2ECC71&size=100' },
-      user: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=SeuFlash&backgroundColor=4576F2&size=100' },
-    };
-
-    // Mock de posts para usar nas notificações
-    const posts = [
-      {
-        id: 'p1',
-        image: require('@/assets/images/publicacao1.png'),
-        time: 'Há 05 Minutos',
-        title: 'Publicação 1',
-      },
-      {
-        id: 'p2',
-        image: require('@/assets/images/publicacao1.png'),
-        time: 'Há 05 Minutos',
-        title: 'Publicação 2',
-      },
-    ];
-
-    const notificationsToday = [
-      {
-        id: '1',
-        type: 'consulta' as const,
-        icon: require('@/assets/images/informacoes.png'),
-        title: 'Consulta agendada para hoje.',
-        description: 'A consulta com a Dra. Maria Glenda irá iniciar hoje às...',
-        time: 'Há 05 Minutos',
-        isRead: false,
-      },
-      {
-        id: '2',
-        type: 'curtiu' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.ana,
-        },
-        post: posts[0],
-        time: posts[0].time,
-        message: 'curtiu sua publicação.',
-        isRead: false,
-      },
-      {
-        id: '3',
-        type: 'curtiu' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.jorge,
-        },
-        post: posts[0],
-        time: posts[0].time,
-        message: 'curtiu sua publicação.',
-        isRead: false,
-      },
-      {
-        id: '4',
-        type: 'curtiu' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.ana,
-        },
-        post: posts[0],
-        time: posts[0].time,
-        message: 'curtiu sua publicação.',
-        isRead: false,
-      },
-      {
-        id: '5',
-        type: 'curtiu' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.jorge,
-        },
-        post: posts[0],
-        time: posts[0].time,
-        message: 'curtiu sua publicação.',
-        isRead: false,
-      },
-      {
-        id: '6',
-        type: 'curtiu' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.ana,
-        },
-        post: posts[0],
-        time: posts[0].time,
-        message: 'curtiu sua publicação.',
-        isRead: false,
-      },
-      {
-        id: '7',
-        type: 'seguiu' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.jorge,
-        },
-        time: posts[0].time,
-        message: 'começou a seguir você.',
-        canFollowBack: true,
-        isRead: false,
-      },
-      {
-        id: '8',
-        type: 'mencionado' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.ana,
-        },
-        post: posts[0],
-        time: posts[0].time,
-        message: 'mencionou você em um comentário.',
-        isRead: false,
-      },
-    ];
-
-    const notificationsWeek = [
-      {
-        id: '9',
-        type: 'seguiu' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: avatars.jorge,
-        },
-        time: posts[0].time,
-        message: 'pediu para se conectar.',
-        canFollowBack: true,
-        canRemove: true,
-        isRead: true, // Notificações antigas já são consideradas lidas
-      },
-      {
-        id: '10',
-        type: 'comentario' as const,
-        user: {
-          name: 'Nome de Usuário',
-          avatar: require('@/assets/images/ana.png'),
-        },
-        post: posts[0],
-        time: posts[0].time,
-        message: 'que você conhece está no iSaúde.',
-        isRead: true,
-      },
-    ];
-
-    this.notifications = [...notificationsToday, ...notificationsWeek];
-    this.updateUnreadCount();
+  private async getNotifications(): Promise<Notification[]> {
+    try {
+      const response = await api.get('/notifications');
+      this.notifications = response.data;
+      this.updateUnreadCount();
+      return this.notifications;
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      return [];
+    }
   }
 
   private updateUnreadCount() {
@@ -182,7 +45,7 @@ class NotificationService {
   }
 
   // Obter todas as notificações
-  getNotifications(): Notification[] {
+  getAllNotifications(): Notification[] {
     return this.notifications;
   }
 
@@ -219,7 +82,7 @@ class NotificationService {
 
     const posts = [{
       id: 'p1',
-      image: require('@/assets/images/publicacao1.png'),
+      image: 'placeholder.png',
       time: 'Agora',
       title: 'Nova Publicação',
     }];

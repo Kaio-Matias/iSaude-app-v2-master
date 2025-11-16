@@ -1,23 +1,27 @@
-import { Story, StoryItem, mockStories } from './StoriesData';
+import api from '../../lib/api';
+import { Story, StoryItem } from './StoriesData';
 
 class StoriesService {
   private stories: Story[] = [];
   private viewedStories: Set<string> = new Set();
 
   constructor() {
-    this.initializeStories();
-  }
-
-  private initializeStories() {
-    this.stories = [...mockStories];
+    this.getStories();
   }
 
   // Obter todas as stories
-  getStories(): Story[] {
-    return this.stories.map(story => ({
-      ...story,
-      hasNewStories: story.stories.some(storyItem => !this.viewedStories.has(storyItem.id))
-    }));
+  async getStories(): Promise<Story[]> {
+    try {
+      const response = await api.get('/stories');
+      this.stories = response.data;
+      return this.stories.map(story => ({
+        ...story,
+        hasNewStories: story.stories.some(storyItem => !this.viewedStories.has(storyItem.id))
+      }));
+    } catch (error) {
+      console.error('Error fetching stories:', error);
+      return [];
+    }
   }
 
   // Obter stories de um usuário específico

@@ -1,9 +1,6 @@
-// Serviço de armazenamento em memória para pulses
-// Simula API calls e mantém dados durante a sessão
-
+import api from '../../lib/api';
 import { storiesService } from '../stories/StoriesService';
 import { PulseData } from './PulseData';
-import { mockPulsesData } from './PulsesService';
 
 export interface PulseComment {
   id: string;
@@ -26,105 +23,19 @@ class PulseStorageService {
   private pulses: PulseData[] = [];
 
   constructor() {
-    this.initializeMockData();
-  }
-
-  private initializeMockData() {
-    // Inicializar pulses com dados mock
-    this.pulses = [...mockPulsesData];
-    
-    // Avatars DiceBear para comentários mockados
-    const avatars = {
-      carlos: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=CarlosMartinez&backgroundColor=20B2AA&size=100' },
-      mariana: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=MarianaSilva&backgroundColor=9B59B6&size=100' },
-      jamile: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=JamileCosta&backgroundColor=E74C3C&size=100' },
-      luana: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=LuanaPereira&backgroundColor=27AE60&size=100' },
-      jorge: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=JorgeZikenay&backgroundColor=FF6B6B&size=100' },
-      ana: { uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=AnaPaulaNutri&backgroundColor=2ECC71&size=100' },
-    };
-
-    // Comentários mockados para o pulse da Dra. Ana (id: '1')
-    const anaComments: PulseComment[] = [
-      {
-        id: 'pulse-mock-1-1',
-        pulseId: '1',
-        text: 'Excelente dicas! Vou implementar no meu dia a dia 💓',
-        user: 'Dr. Carlos Martinez',
-        avatar: avatars.carlos,
-        timestamp: Date.now() - 3600000, // 1 hora atrás
-      },
-      {
-        id: 'pulse-mock-1-2',
-        pulseId: '1',
-        text: 'Muito importante essas informações sobre o coração!',
-        user: 'Dra. Mariana Silva',
-        avatar: avatars.mariana,
-        timestamp: Date.now() - 1800000, // 30 min atrás
-      },
-    ];
-
-    // Comentários mockados para o pulse do Dr. Jorge (id: '2')
-    const jorgeComments: PulseComment[] = [
-      {
-        id: 'pulse-mock-2-1',
-        pulseId: '2',
-        text: 'Informação que salva vidas! Compartilhando 🚨',
-        user: 'Jamile Costa',
-        avatar: avatars.jamile,
-        timestamp: Date.now() - 2700000, // 45 min atrás
-      },
-      {
-        id: 'pulse-mock-2-2',
-        pulseId: '2',
-        text: 'SAMU - fácil de lembrar! Obrigada por compartilhar',
-        user: 'Ana Paula Nutri',
-        avatar: avatars.ana,
-        timestamp: Date.now() - 900000, // 15 min atrás
-      },
-      {
-        id: 'pulse-mock-2-3',
-        pulseId: '2',
-        text: 'Todo mundo deveria saber disso 👏',
-        user: 'Luana Pereira',
-        avatar: avatars.luana,
-        timestamp: Date.now() - 600000, // 10 min atrás
-      },
-    ];
-
-    // Configurar interações mockadas
-    this.interactions.set('1', {
-      pulseId: '1',
-      isLiked: false,
-      likeCount: 1240,
-      comments: anaComments,
-    });
-
-    this.interactions.set('2', {
-      pulseId: '2',
-      isLiked: true,
-      likeCount: 2100,
-      comments: jorgeComments,
-    });
-
-    this.interactions.set('3', {
-      pulseId: '3',
-      isLiked: false,
-      likeCount: 780,
-      comments: [],
-    });
-
-    this.interactions.set('4', {
-      pulseId: '4',
-      isLiked: true,
-      likeCount: 945,
-      comments: [],
-    });
+    this.getPulses();
   }
 
   // Obter pulses
   async getPulses(): Promise<PulseData[]> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return this.pulses;
+    try {
+      const response = await api.get('/pulses');
+      this.pulses = response.data;
+      return this.pulses;
+    } catch (error) {
+      console.error('Error fetching pulses:', error);
+      return [];
+    }
   }
 
   // Curtidas

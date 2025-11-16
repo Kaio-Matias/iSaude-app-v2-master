@@ -15,8 +15,7 @@ import {
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import InlineComments from './InlineComments';
-import { Post } from './PostData';
-import { storageService } from './StorageService';
+import { Post } from '../../lib/feed';
 
 interface PostCardProps {
   post: Post;
@@ -25,80 +24,34 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, onLike, onDelete }: PostCardProps) {
-  const [isLiked, setIsLiked] = useState(post.isLiked || false);
-  const [likeCount, setLikeCount] = useState(post.likes);
   const [commentCount, setCommentCount] = useState(post.comments);
   const [showComments, setShowComments] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState<string>('');
-  const [currentLikers, setCurrentLikers] = useState<any[]>(post.likers || []);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  useEffect(() => {
-    // Carrega o status das curtidas e comentários do storage
-    const loadInteractionData = async () => {
-      try {
-        // Carrega curtidas
-        const likeStatus = await storageService.getLikeStatus(post.id, post.likes);
-        setIsLiked(likeStatus.isLiked);
-        setLikeCount(likeStatus.likeCount);
-
-        // Carrega contador de comentários
-        const totalComments = await storageService.getCommentCount(post.id, post.comments);
-        setCommentCount(totalComments);
-
-        // Carrega lista de likers dinâmicos
-        const interaction = await storageService.getInteraction(post.id);
-        if (interaction) {
-          setCurrentLikers(interaction.likers);
-        } else {
-          setCurrentLikers(post.likers || []);
-        }
-      } catch {
-        console.error('Erro ao carregar dados');
-      }
-    };
-
-    loadInteractionData();
-  }, [post.id, post.likes, post.comments, post.likers]);
+  // O estado de 'isLiked' e 'likeCount' agora é controlado pelo componente pai (home.tsx)
+  const { isLiked, likes: likeCount, likers: currentLikers } = post;
 
   function formatNumber(n: number) {
     if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K`;
     return String(n);
   }
 
-  const handleLike = async () => {
-    try {
-      const result = await storageService.toggleLike(post.id, likeCount);
-      setIsLiked(result.isLiked);
-      setLikeCount(result.likeCount);
-      
-      // Atualiza a lista de likers
-      const interaction = await storageService.getInteraction(post.id);
-      if (interaction) {
-        setCurrentLikers(interaction.likers);
-      }
-      
-      onLike(post.id);
-    } catch {
-      console.error('Erro ao curtir');
-    }
+  const handleLike = () => {
+    onLike(post.id);
   };
 
   const handleCommentPress = () => {
     setShowComments(!showComments);
   };
 
-  const handleCommentAdded = async () => {
-    // Recarrega os dados quando um comentário é adicionado
-    try {
-      const totalComments = await storageService.getCommentCount(post.id, post.comments);
-      setCommentCount(totalComments);
-    } catch {
-      console.error('Erro ao atualizar comentários');
-    }
+  const handleCommentAdded = () => {
+    // Apenas incrementa o contador localmente. A lógica de API para comentários
+    // precisaria ser implementada separadamente.
+    setCommentCount(prev => prev + 1);
   };
 
   const handleMoreOptions = () => {

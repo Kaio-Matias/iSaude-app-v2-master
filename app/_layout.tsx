@@ -1,11 +1,30 @@
-import { Stack } from 'expo-router';
-import React from 'react';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import React, { useEffect } from 'react';
 import '../global.css'; // Importa seu Tailwind!
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AuthProvider, useAuth } from '../hooks/useAuth';
 
-export default function RootLayout() {
+const InitialLayout = () => {
+  const { isAuthenticated } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if navigation is ready
+    if (segments.length === 0) {
+      return;
+    }
+
+    const inTabsGroup = segments[0] === '(tabs)';
+
+    if (!isAuthenticated && inTabsGroup) {
+      router.replace('/login');
+    } else if (isAuthenticated && (segments[0] === 'login' || segments[0] === 'index')) {
+      router.replace('/(tabs)/home');
+    }
+  }, [isAuthenticated, segments]);
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="login" />
@@ -23,6 +42,15 @@ export default function RootLayout() {
         <Stack.Screen name="(professional)" />
         <Stack.Screen name="(clinic)" />
       </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <InitialLayout />
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }
