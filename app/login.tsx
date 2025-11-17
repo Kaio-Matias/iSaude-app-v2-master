@@ -10,8 +10,6 @@ import { router } from "expo-router";
 import { signIn } from "../lib/auth";
 import { useAuth } from "../hooks/useAuth";
 
-import { useAuth } from "../hooks/useAuth";
-
 export default function LoginScreen() {
     const { login } = useAuth();
     const [email, setEmail] = useState("");

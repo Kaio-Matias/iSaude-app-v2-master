@@ -10,11 +10,16 @@ interface DateInputProps {
 }
 
 // Função para converter string dd/MM/yyyy para Date
-function stringToDate(str: string): Date {
-  if (!str) return new Date();
-  const [day, month, year] = str.split('/');
-  if (!day || !month || !year) return new Date();
-  return new Date(Number(year), Number(month) - 1, Number(day));
+function stringToDate(str: string): Date | undefined {
+  if (!str) return undefined;
+  const parts = str.split('/');
+  if (parts.length !== 3) return undefined;
+  const [day, month, year] = parts;
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  if (isNaN(date.getTime())) {
+    return undefined;
+  }
+  return date;
 }
 
 const DateInput: React.FC<DateInputProps> = ({ label, value, onChange }) => {
@@ -63,7 +68,7 @@ const DateInput: React.FC<DateInputProps> = ({ label, value, onChange }) => {
         display={Platform.OS === 'ios' ? 'inline' : 'default'}
         themeVariant={colorScheme === "dark" ? "dark" : "light"}
         locale="pt-BR"
-        date={value ? stringToDate(value) : new Date()}
+        date={value ? stringToDate(value) || new Date() : new Date()}
         confirmTextIOS="Confirmar"
         cancelTextIOS="Cancelar"
       />
