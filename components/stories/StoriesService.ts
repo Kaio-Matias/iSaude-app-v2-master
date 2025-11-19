@@ -12,13 +12,17 @@ class StoriesService {
   // Obter todas as stories
   async getStories(): Promise<Story[]> {
     try {
-      const response = await api.get('/stories');
+      const response = await api.get('/api/social-midia/story');
       this.stories = response.data;
       return this.stories.map(story => ({
         ...story,
         hasNewStories: story.stories.some(storyItem => !this.viewedStories.has(storyItem.id))
       }));
-    } catch (error) {
+    } catch (error: any) {
+      console.log('DEBUG: Error object in catch block:', JSON.stringify(error));
+      if (error.response && error.response.status === 404) {
+        return []; // 404 é esperado, retorna vazio sem logar erro.
+      }
       console.error('Error fetching stories:', error);
       return [];
     }

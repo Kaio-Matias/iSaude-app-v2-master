@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import '../global.css'; // Importa seu Tailwind!
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from '../hooks/useAuth';
+import { TabBadgesProvider } from '@/hooks/useTabBadges';
 
 const InitialLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -49,7 +50,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
-        <InitialLayout />
+        <TabBadgesProvider>
+          <InitialLayout />
+        </TabBadgesProvider>
       </AuthProvider>
     </GestureHandlerRootView>
   );

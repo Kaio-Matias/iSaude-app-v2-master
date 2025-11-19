@@ -47,13 +47,16 @@ const mapPostFromApi = (apiPost: any): Post => {
 
 export const getPosts = async (): Promise<Post[]> => {
   try {
-    const response = await api.get('/api/postagens');
+    const response = await api.get('/api/social-midia/postagens');
     if (response.data && Array.isArray(response.data.postagens)) {
       // Mapeia a resposta da API para o formato que o componente PostCard espera
       return response.data.postagens.map(mapPostFromApi);
     }
     return [];
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response && error.response.status === 404) {
+      return []; // 404 é esperado, retorna vazio sem logar erro.
+    }
     console.error("Erro ao buscar postagens da API:", error);
     // Em caso de erro, pode-se retornar um array vazio ou lançar o erro
     // Para manter o app funcional, retornamos um array vazio.
@@ -65,7 +68,7 @@ export const likePost = async (postId: string): Promise<void> => {
   try {
     // O endpoint para curtir pode variar. Ex: /api/postagens/{postId}/like
     // Assumindo um POST para a rota de curtidas da postagem.
-    await api.post(`/api/postagens/${postId}/like`);
+    await api.post(`/api/social-midia/postagens/${postId}/like`);
   } catch (error) {
     console.error(`Erro ao curtir o post ${postId}:`, error);
     throw error; // Lança o erro para ser tratado no componente
@@ -74,7 +77,7 @@ export const likePost = async (postId: string): Promise<void> => {
 
 export const deletePost = async (postId: string): Promise<void> => {
   try {
-    await api.delete(`/api/postagens/${postId}`);
+    await api.delete(`/api/social-midia/postagens/${postId}`);
   } catch (error) {
     console.error(`Erro ao deletar o post ${postId}:`, error);
     throw error; // Lança o erro para ser tratado no componente
@@ -84,7 +87,7 @@ export const deletePost = async (postId: string): Promise<void> => {
 // Funções para Comentários
 export const getComments = async (postId: string): Promise<Comment[]> => {
   try {
-    const response = await api.get(`/api/postagens/${postId}/comments`);
+    const response = await api.get(`/api/social-midia/postagens/${postId}/comments`);
     // TODO: Adicionar mapeamento da resposta da API para o formato de Comment, se necessário
     return response.data.comments || [];
   } catch (error) {
@@ -95,7 +98,7 @@ export const getComments = async (postId: string): Promise<Comment[]> => {
 
 export const addComment = async (postId: string, text: string): Promise<Comment> => {
   try {
-    const response = await api.post(`/api/postagens/${postId}/comments`, { text });
+    const response = await api.post(`/api/social-midia/postagens/${postId}/comments`, { text });
     // TODO: Adicionar mapeamento da resposta da API para o formato de Comment, se necessário
     return response.data.comment;
   } catch (error) {
@@ -106,7 +109,7 @@ export const addComment = async (postId: string, text: string): Promise<Comment>
 
 export const deleteComment = async (postId: string, commentId: string): Promise<void> => {
   try {
-    await api.delete(`/api/postagens/${postId}/comments/${commentId}`);
+    await api.delete(`/api/social-midia/postagens/${postId}/comments/${commentId}`);
   } catch (error) {
     console.error(`Erro ao deletar o comentário ${commentId}:`, error);
     throw error;

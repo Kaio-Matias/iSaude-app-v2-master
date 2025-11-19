@@ -1,5 +1,5 @@
 import { HapticTab } from "@/components/haptic-tab";
-import { useTabBadges } from "@/hooks/useTabBadges";
+import { TabBadgesProvider, useTabBadges } from "@/hooks/useTabBadges";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
@@ -106,5 +106,9 @@ function TabLayoutContent() {
 }
 
 export default function TabLayout() {
-  return <TabLayoutContent />;
+  return (
+    <TabBadgesProvider>
+      <TabLayoutContent />
+    </TabBadgesProvider>
+  );
 }

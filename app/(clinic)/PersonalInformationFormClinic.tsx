@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Pressable, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from "react-native";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { BackHeader } from "../../components/ui/BackHeader";
@@ -10,8 +10,11 @@ import { router } from "expo-router";
 import { ConfirmSmsCodeModal } from '../../components/modals/ConfirmSmsCodeModal';
 import { SucessVerificationModal } from '../../components/modals/SucessVerificationModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getClinicProfile } from '../../lib/clinic';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function PersonalInformationFormClinic(props: any) {
+  const { isAuthenticated } = useAuth();
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
@@ -19,9 +22,33 @@ export default function PersonalInformationFormClinic(props: any) {
   const [showModal, setShowModal] = useState(false);
   const [verified, setVerified] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const insets = useSafeAreaInsets();
 
   const isValid = nome.trim() && cpf.trim() && email.trim() && telefone.trim();
+
+  useEffect(() => {
+    async function loadProfile() {
+      if (!isAuthenticated) {
+        setLoadingProfile(false);
+        return;
+      }
+      try {
+        const profile = await getClinicProfile();
+        setNome(profile.name);
+        setEmail(profile.email);
+        // Assuming CPF and telefone are part of the profile, add them here
+        // setCpf(profile.cpf);
+        // setTelefone(profile.telefone);
+      } catch (error) {
+        Alert.alert("Erro", "Não foi possível carregar o perfil da clínica.");
+        console.error("Failed to load clinic profile:", error);
+      } finally {
+        setLoadingProfile(false);
+      }
+    }
+    loadProfile();
+  }, [isAuthenticated]);
 
   const handleContinue = () => {
     if (!isValid) return;
@@ -49,6 +76,15 @@ export default function PersonalInformationFormClinic(props: any) {
       return numeros.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     }
     return numeros;
+  }
+
+  if (loadingProfile) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Carregando perfil...</Text>
+      </View>
+    );
   }
 
   return (
