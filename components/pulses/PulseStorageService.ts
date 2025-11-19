@@ -32,7 +32,10 @@ class PulseStorageService {
       const response = await api.get('/pulses');
       this.pulses = response.data;
       return this.pulses;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        return []; // 404 é esperado, retorna vazio sem logar erro.
+      }
       console.error('Error fetching pulses:', error);
       return [];
     }

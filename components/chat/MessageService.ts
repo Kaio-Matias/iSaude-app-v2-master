@@ -35,13 +35,16 @@ class MessageService {
   // Obter todas as conversas da API
   async getConversations(): Promise<Conversation[]> {
     try {
-      const response = await api.get('/conversations');
+      const response = await api.get('/api/social-midia/conversations');
       // TODO: Adicionar validação e mapeamento de dados se a resposta da API
       // for diferente da interface Conversation.
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        return []; // 404 é esperado, retorna vazio sem logar erro.
+      }
       console.error('Erro ao buscar conversas:', error);
-      return []; // Retorna um array vazio em caso de erro
+      return []; // Retorna um array vazio para outros erros.
     }
   }
 

@@ -30,11 +30,14 @@ class NotificationService {
 
   private async getNotifications(): Promise<Notification[]> {
     try {
-      const response = await api.get('/notifications');
+      const response = await api.get('/api/social-midia/notificacoes');
       this.notifications = response.data;
       this.updateUnreadCount();
       return this.notifications;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        return []; // 404 é esperado, retorna vazio sem logar erro.
+      }
       console.error('Error fetching notifications:', error);
       return [];
     }

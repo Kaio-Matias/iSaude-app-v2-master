@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, SafeAreaView, Text, TouchableOpacity, View, Linking, ImageBackground } from "react-native";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
@@ -7,6 +7,7 @@ import { ChevronRight, ArrowRight, KeyRound, IdCard } from "lucide-react-native"
 import { Link } from "../components/ui/Link";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { UserService } from "../lib/services/UserService";
 
 export default function HomeScreen() {
     const [cpfCnpj, setCpfCnpj] = useState("");
@@ -15,10 +16,29 @@ export default function HomeScreen() {
     const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
     const [smsModal, setSmsModal] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [users, setUsers] = useState<any[]>([]); // State to store fetched users
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const insets = useSafeAreaInsets();
 
     const algumModalAberto = Boolean(modalVisible || forgotPasswordModal || smsModal);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const fetchedUsers = await UserService.getUsers();
+                setUsers(fetchedUsers);
+            } catch (err) {
+                setError("Failed to fetch users.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     const handleShowSmsModal = (phone: string) => {
         setPhoneNumber(phone);
@@ -50,6 +70,19 @@ export default function HomeScreen() {
     return (
         <ImageBackground source={require("../assets/images/home-image.png")} className={`flex-1${algumModalAberto ? ' pb-80' : ''}`}>
             <SafeAreaView className="flex-1 bg-transparent">
+                {loading && <Text className="text-white text-center mt-4">Loading users...</Text>}
+                {error && <Text className="text-red-500 text-center mt-4">{error}</Text>}
+                {!loading && !error && users.length > 0 && (
+                    <View className="mt-4 p-4 bg-gray-800 bg-opacity-75 rounded-lg mx-4">
+                        <Text className="text-white text-lg font-bold mb-2">Fetched Users (for demonstration):</Text>
+                        {users.map((user: any, index: number) => (
+                            <Text key={index} className="text-white text-sm">{JSON.stringify(user)}</Text>
+                        ))}
+                    </View>
+                )}
+                {!loading && !error && users.length === 0 && (
+                    <Text className="text-white text-center mt-4">No users fetched or API endpoint not available.</Text>
+                )}
                 <View className="flex-1 px-4 pt-10">
                     {/* Topo com imagem e logo */}
                     <View className={`flex-1 items-center justify-center${algumModalAberto ? ' pb-80' : ''}`}>

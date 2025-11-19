@@ -1,17 +1,15 @@
-// WARNING: This is not a secure way to store the authentication token.
-// It is stored in a global variable and will be lost when the app is closed.
-// For a production application, you should use a secure storage solution like expo-secure-store.
+import * as SecureStore from 'expo-secure-store';
 
-let authToken: string | null = null;
+const TOKEN_KEY = 'authToken';
 
-export const setToken = (token: string) => {
-  authToken = token;
+export const setToken = async (token: string) => {
+  await SecureStore.setItemAsync(TOKEN_KEY, token);
 };
 
-export const getToken = () => {
-  return authToken;
+export const getToken = async () => {
+  return await SecureStore.getItemAsync(TOKEN_KEY);
 };
 
-export const clearToken = () => {
-  authToken = null;
+export const clearToken = async () => {
+  await SecureStore.deleteItemAsync(TOKEN_KEY);
 };

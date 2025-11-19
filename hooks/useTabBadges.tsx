@@ -30,7 +30,9 @@ export function TabBadgesProvider({ children }: { children: ReactNode }) {
     const initializeBadges = () => {
       const notifications = notificationService.getUnreadCount();
       const conversations = messageService.getConversations();
-      const unreadChats = conversations.filter(conv => conv.unreadCount > 0).length;
+      const unreadChats = Array.isArray(conversations)
+        ? conversations.filter(conv => conv.unreadCount > 0).length
+        : 0;
 
       setBadges({
         home: notifications,
