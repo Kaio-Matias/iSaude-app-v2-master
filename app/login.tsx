@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, SafeAreaView, Text, TouchableOpacity, View, Linking, ImageBackground, Alert } from "react-native";
+import { Image, SafeAreaView, Text, View, ImageBackground, Alert } from "react-native";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { ReusableModal } from "../components/ui/ReusableModal";
@@ -7,76 +7,60 @@ import { ChevronRight, ArrowRight, KeyRound, Mail } from "lucide-react-native";
 import { Link as UILink } from "../components/ui/Link";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from "expo-router";
-import { signIn } from "../lib/auth";
-import { useAuth } from "../hooks/useAuth";
+import * as SecureStore from 'expo-secure-store';
+import { api } from "../lib/api"; // Usando a API direta
 
 export default function LoginScreen() {
-    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [modalVisible, setModalVisible] = useState(true);
-    const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
-    const [smsModal, setSmsModal] = useState(false);
-    const [phoneNumber, setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
 
     const insets = useSafeAreaInsets();
-
-    const algumModalAberto = Boolean(modalVisible || forgotPasswordModal || smsModal);
-
-    const handleShowSmsModal = (phone: string) => {
-        setPhoneNumber(phone);
-        setForgotPasswordModal(false);
-        setSmsModal(true);
-    };
-
-    const handleBackToForgotPassword = () => {
-        setSmsModal(false);
-        setForgotPasswordModal(true);
-    };
-
-    const handleVerifyCode = (code: string) => {
-        console.log("Código verificado:", code);
-        // Aqui você pode adicionar a lógica de verificação
-        setSmsModal(false);
-    };
-
-    const handleResendCode = () => {
-        console.log("Reenviando código para:", phoneNumber);
-        // Aqui você pode adicionar a lógica de reenvio
-    };
+    const algumModalAberto = Boolean(modalVisible);
 
     const handleNavigateToRegister = () => {
-        setModalVisible(false); // Fecha o modal
+        setModalVisible(false);
         router.push('/RegisterScreen');
     };
 
     const handleLogin = async () => {
+        if (!email || !senha) return Alert.alert("Erro", "Preencha todos os campos");
+
         setLoading(true);
         try {
-            const { token } = await signIn({ email, password: senha });
-            login(token);
-            console.log("Login successful, token:", token);
+            // Chamada real para a API (BFF)
+            const response = await api.post('/api/user/login', {
+                email: email.trim(),
+                password: senha
+            });
+
+            const { token, user } = response.data;
+
+            // Salva sessão
+            await SecureStore.setItemAsync('userToken', token);
+            await SecureStore.setItemAsync('userData', JSON.stringify(user));
+            
+            console.log("Login com sucesso:", user.name);
             router.replace('/(tabs)/home');
-        } catch (error) {
-            Alert.alert("Erro no Login", error instanceof Error ? error.message : "Ocorreu um erro desconhecido.");
+
+        } catch (error: any) {
+            const msg = error.response?.data?.error || "Verifique suas credenciais.";
+            Alert.alert("Erro no Login", msg);
         } finally {
             setLoading(false);
         }
     };
 
-
     return (
         <ImageBackground source={require("../assets/images/home-image.png")} className={`flex-1${algumModalAberto ? ' pb-80' : ''}`}>
             <SafeAreaView className="flex-1 bg-transparent">
                 <View className="flex-1 px-4 pt-10">
-                    {/* Topo com imagem e logo */}
                     <View className={`flex-1 items-center justify-center${algumModalAberto ? ' pb-80' : ''}`}>
                         <Image source={require("../assets/images/logo-text.png")} className="w-60 h-30" resizeMode="contain" />
                     </View>
-                
                 </View>
-                {/* Modal de exemplo */}
+
                 <ReusableModal visible={modalVisible} onClose={() => setModalVisible(false)}>
                     <Text className="text-2xl font-bold mb-1">Que bom ter você de volta!</Text>
                     <Text className="text-lg text-gray-500 mb-4">
@@ -89,6 +73,7 @@ export default function LoginScreen() {
                         onChangeText={setEmail}
                         icon={<Mail size={18} color="#A0AEC0" />}
                         keyboardType="email-address"
+                        autoCapitalize="none"
                     />
                     <Input
                         label="Senha"
@@ -118,7 +103,7 @@ export default function LoginScreen() {
                         <UILink onPress={handleNavigateToRegister} className="text-lg">Crie uma conta!</UILink>
                     </View>
                 </ReusableModal>
-                {/* Botão 'Começar' só aparece se nenhum modal estiver aberto */}
+
                 {!algumModalAberto && (
                   <Button
                     className="self-center w-10/12"
@@ -128,10 +113,6 @@ export default function LoginScreen() {
                     Começar
                   </Button>
                 )}
-                {/* Modal de Esqueceu a Senha */}
-                {/* <ForgotPasswordModal ... /> */}
-                {/* Modal de Confirmação SMS */}
-                {/* <ConfirmSmsCodeModal ... /> */}
             </SafeAreaView>
         </ImageBackground>
     );

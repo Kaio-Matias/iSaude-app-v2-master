@@ -1,39 +1,43 @@
-import api from './api';
-import axios from 'axios';
+import { api } from './api';
+import * as SecureStore from 'expo-secure-store';
 
-// Define the shape of the arguments for the signIn function
-interface SignInCredentials {
-  email: string;
-  password: string;
-}
-
-// Define the shape of the successful response
-interface AuthResponse {
-  message: string;
+interface LoginResponse {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
   token: string;
 }
 
-/**
- * Authenticates the user with the provided credentials.
- * @param credentials - The user's email and password.
- * @returns The authentication response including the token.
- * @throws Will throw an error if authentication fails.
- */
-export async function signIn({ email, password }: SignInCredentials): Promise<AuthResponse> {
+export async function signIn(email: string, password: string): Promise<LoginResponse> {
   try {
-    const response = await api.post<AuthResponse>('/api/user/login', {
+    // Rota mapeada no BFF que redireciona para o serviço de usuários
+    const response = await api.post('/api/user/login', {
       email,
-      password,
+      password, // O backend espera 'password' ou 'senha'? Verifiquei UsersAPI.ts: espera { email, password }
     });
-    return response.data;
-  } catch (error) {
-    // Log the error and re-throw it to be handled by the calling function
-    console.error('Authentication failed:', error);
-    if (axios.isAxiosError(error) && error.response) {
-      // Throw a new error with a more specific message from the server if available
-      throw new Error(error.response.data.message || 'Invalid credentials');
-    }
-    // Throw a generic error if the response is not available
-    throw new Error('An unexpected error occurred during login.');
+
+    const { user, token } = response.data;
+
+    // Salva o token e dados básicos do usuário
+    await SecureStore.setItemAsync('userToken', token);
+    await SecureStore.setItemAsync('userData', JSON.stringify(user));
+
+    return { user, token };
+  } catch (error: any) {
+    console.error('Erro no login:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Falha ao realizar login.');
   }
+}
+
+export async function signOut() {
+  await SecureStore.deleteItemAsync('userToken');
+  await SecureStore.deleteItemAsync('userData');
+}
+
+export async function getUserData() {
+  const data = await SecureStore.getItemAsync('userData');
+  return data ? JSON.parse(data) : null;
 }

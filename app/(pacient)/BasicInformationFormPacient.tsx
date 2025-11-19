@@ -8,19 +8,27 @@ import DateInput from "../../components/ui/DateInput";
 import { router } from "expo-router";
 import { ArrowRight } from "lucide-react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRegister } from '../../context/RegisterContext'; // <--- NOVO
 
 const options = ["Masculino", "Feminino", "Outro", "Prefiro não dizer"];
 
-export default function BasicInformationFormPacient(props: any) {
+export default function BasicInformationFormPacient() {
+  const { updateData } = useRegister(); // <--- NOVO
   const [selectedOption, setSelectedOption] = useState("Masculino");
-  const [birthDate, setBirthDate] = useState("");
+  const [birthDate, setBirthDate] = useState(""); // Note: seu componente de data retorna string ou date?
   const insets = useSafeAreaInsets();
 
-  const isValid = selectedOption && birthDate.trim();
+  const isValid = selectedOption && birthDate;
 
   const handleNext = () => {
     if (!isValid) return;
-    if (props.onConfirm) props.onConfirm();
+    
+    // Salva no contexto
+    updateData({ 
+        gender: selectedOption, 
+        birthDate: birthDate 
+    });
+    
     router.push("/(pacient)/UserInformationFormPacient");
   };
 
@@ -29,13 +37,12 @@ export default function BasicInformationFormPacient(props: any) {
       <BackHeader title="Nova Conta" />
       <Stepper totalSteps={4} currentStep={2} />
       
-      {/* Conteúdo principal com scroll */}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={{ flex: 1, paddingHorizontal: 24 }}>
             <Text className="text-2xl font-bold mb-1 mt-4">Queremos te conhecer melhor.</Text>
             <Text className="text-base text-gray-500 mb-6">
-              Agora vamos definir algumas informações básicas sobre você, para criar uma experiência única em nossa plataforma
+              Agora vamos definir algumas informações básicas sobre você.
             </Text>
             <Select
               label="Qual opção melhor representa você?"
@@ -43,28 +50,18 @@ export default function BasicInformationFormPacient(props: any) {
               options={options}
               onSelect={setSelectedOption}
             />
+            {/* Assumindo que seu componente DateInput aceita string e retorna string */}
             <DateInput
               label="Data de Nascimento"
               value={birthDate}
-              onChange={setBirthDate}
+              onChange={setBirthDate} 
             />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* Botão fixo na parte inferior */}
-      <View style={{ 
-        paddingHorizontal: 24, 
-        paddingBottom: insets.bottom + 24, 
-        backgroundColor: "#fff",
-        borderTopWidth: 1,
-        borderTopColor: '#f3f4f6'
-      }}>
-        <Button
-          onPress={handleNext}
-          icon={<ArrowRight size={18} color="white" />}
-          disabled={!isValid}
-        >
+      <View style={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 24, borderTopWidth: 1, borderTopColor: '#f3f4f6' }}>
+        <Button onPress={handleNext} icon={<ArrowRight size={18} color="white" />} disabled={!isValid}>
           Próximo
         </Button>
       </View>

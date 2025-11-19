@@ -1,59 +1,61 @@
-import { Stack, useRouter, useSegments } from 'expo-router';
-import React, { useEffect } from 'react';
-import '../global.css'; // Importa seu Tailwind!
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AuthProvider, useAuth } from '../hooks/useAuth';
-import { TabBadgesProvider } from '@/hooks/useTabBadges';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import 'react-native-reanimated';
 
-const InitialLayout = () => {
-  const { isAuthenticated } = useAuth();
-  const segments = useSegments();
-  const router = useRouter();
+import { useColorScheme } from '@/components/useColorScheme';
+import { RegisterProvider } from '../context/RegisterContext'; // <--- IMPORTAR
 
-  useEffect(() => {
-    // Check if navigation is ready
-    if (segments.length === 0) {
-      return;
-    }
+export {
+  ErrorBoundary,
+} from 'expo-router';
 
-    const inTabsGroup = segments[0] === '(tabs)';
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
 
-    if (!isAuthenticated && inTabsGroup) {
-      router.replace('/login');
-    } else if (isAuthenticated && (segments[0] === 'login' || segments[0] === 'index')) {
-      router.replace('/(tabs)/home');
-    }
-  }, [isAuthenticated, segments]);
-
-  return (
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="login" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="RegisterScreen" />
-        <Stack.Screen name="ConnectTypeScreen" />
-        <Stack.Screen name="ForgotPasswordScreen" />
-        <Stack.Screen name="NovaSenhaScreen" />
-        <Stack.Screen name="SenhaAlteradaScreen" />
-        <Stack.Screen name="Terms" />
-        <Stack.Screen name="Polity" />
-        
-        {/* Telas dos Grupos de Rotas */}
-        <Stack.Screen name="(pacient)" />
-        <Stack.Screen name="(professional)" />
-        <Stack.Screen name="(clinic)" />
-      </Stack>
-  );
-}
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [loaded, error] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    ...FontAwesome.font,
+  });
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <RootLayoutNav />;
+}
+
+function RootLayoutNav() {
+  const colorScheme = useColorScheme();
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <TabBadgesProvider>
-          <InitialLayout />
-        </TabBadgesProvider>
-      </AuthProvider>
-    </GestureHandlerRootView>
+    // ADICIONAR O PROVIDER AQUI
+    <RegisterProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="login" />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          {/* Outras rotas */}
+        </Stack>
+      </ThemeProvider>
+    </RegisterProvider>
   );
 }

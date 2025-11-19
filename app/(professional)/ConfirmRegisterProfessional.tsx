@@ -1,48 +1,73 @@
-import React from "react";
-import { View, Text, Image, ScrollView, SafeAreaView } from "react-native";
-import { Button } from "../../components/ui/Button";
-import Stepper from "../../components/ui/Stepper";
-import { useRouter } from "expo-router";
-import { BackHeader } from "../../components/ui/BackHeader";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Text, Image, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button } from '../../components/ui/Button'; // Correção 1
+import { router } from 'expo-router';
+import { api } from '../../lib/api';
+import { useRegister } from '../../context/RegisterContext';
 
-export default function ConfirmedRegisterProfessional(props: any) {
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
-  
+export default function ConfirmRegisterProfessional() {
+  const { data, clearData } = useRegister();
+  const [loading, setLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: 'PROFISSIONAL',
+        cpf: data.cpf,
+        phone: data.phone,
+        // Seus campos específicos de profissional (certifique-se que o backend aceita)
+        // crm: data.professionalId,
+        // specialty: data.specialty
+      };
+
+      await api.post('/api/user', payload);
+
+      Alert.alert('Sucesso', 'Profissional cadastrado!', [
+        { 
+          text: 'Ir para Login', 
+          onPress: () => {
+            clearData();
+            router.replace('/login');
+          } 
+        }
+      ]);
+    } catch (error: any) {
+      Alert.alert('Erro', error.response?.data?.error || 'Falha no cadastro.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <BackHeader title="Cadastro Confirmado!" hideBackIcon />
-      <Stepper totalSteps={5} currentStep={6} />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="flex-1 px-4 pt-2 items-center justify-start w-full">
-          <View className="w-full items-center mt-2 mb-2">
-           
-          </View>
-         
-          <View className="items-center justify-center w-full" style={{ backgroundColor: '#fff', borderRadius: 8, height: '65%', marginBottom: 24, paddingVertical: 8 }}>
-            <Image
-              source={require("../../assets/images/Confirm-Register-Professional.png")}
-              style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
-            />
-          </View>
-          <View className="w-full px-2 flex justify-center">
-            <Text className="text-2xl font-bold mb-1 text-left w-full" style={{ marginBottom: 4 }}>
-            Cadastro realizado com sucesso!
-            </Text>
-            <Text className="text-gray-500 text-base text-left w-full">
-            Agora você faz parte do iSaúde e pode acessar todos os recursos da nossa plataforma. Bem-vindo!
-            </Text>
-          </View>
-        </View>
-      </ScrollView>
-      <View style={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 24, backgroundColor: "#fff" }}>
-        <Button
-          onPress={() => router.replace('/(tabs)/home')}
-          className="w-full rounded-lg"
-          style={{ backgroundColor: '#01AEA4' }}
-        >
-          Começar a Navegar
+    <SafeAreaView className="flex-1 bg-white px-5 items-center justify-center">
+      <View className="items-center mb-10">
+        <Image
+          source={require('../../assets/images/cadastro-confirmado-profissional.png')}
+          className="w-64 h-64 mb-5"
+          resizeMode="contain"
+        />
+        <Text className="text-2xl font-bold text-primary text-center mb-2">
+          Confirmação Profissional
+        </Text>
+        <Text className="text-gray-500 text-center text-base">
+          Finalize seu cadastro para atender.
+        </Text>
+      </View>
+
+      <View className="w-full gap-y-4">
+        {/* Correção 2: Texto como children */}
+        <Button onPress={handleConfirm} disabled={loading}>
+            {loading ? "Processando..." : "Finalizar Cadastro"}
+        </Button>
+
+        {/* Correção 3: Variant secondary */}
+        <Button variant="secondary" onPress={() => router.back()} disabled={loading}>
+            Voltar
         </Button>
       </View>
     </SafeAreaView>
